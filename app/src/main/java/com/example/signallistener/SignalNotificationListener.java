@@ -35,14 +35,21 @@ public class SignalNotificationListener extends NotificationListenerService {
 
         Log.d(TAG, "Channel: " + channelName + " | Text: " + full);
 
-        // Only register channels that carry a valid parsed signal
-        SignalParser.Signal sig = SignalParser.parse(full);
-        if (sig == null) return;
-
+        // Register channel on ANY telegram notification (not just signals)
         ChannelStore store = ChannelStore.get(this);
         ChannelConfig cfg = store.findOrCreate(channelName);
-        store.incrementSignal(channelName);
 
+        // Try to parse as a signal
+        SignalParser.Signal sig = SignalParser.parse(full);
+        if (sig == null) {
+            // Not a signal — just log it so user can see the channel in the list
+            String preview = full.length() > 60 ? full.substring(0, 60) + "..." : full;
+            MainActivity.appendLog("Notif [" + channelName + "]: " + preview);
+            return;
+        }
+
+        // Valid signal!
+        store.incrementSignal(channelName);
         MainActivity.appendLog("SIGNAL from [" + channelName + "]:\n" + sig);
 
         if (!cfg.enabled) {
@@ -52,7 +59,7 @@ public class SignalNotificationListener extends NotificationListenerService {
 
         lastSignal = sig;
 
-        // Always alert with sound/vibration, regardless of route
+        // Always alert with sound/vibration when enabled
         AlertNotifier.show(this, channelName, sig);
 
         switch (cfg.route) {

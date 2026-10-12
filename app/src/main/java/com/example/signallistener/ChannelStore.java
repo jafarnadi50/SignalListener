@@ -64,6 +64,15 @@ public class ChannelStore {
         notifyListeners();
     }
 
+    public synchronized void remove(String name) {
+        ChannelConfig c = find(name);
+        if (c != null) {
+            channels.remove(c);
+            save();
+            notifyListeners();
+        }
+    }
+
     private void load() {
         String json = prefs.getString(KEY, "[]");
         try {

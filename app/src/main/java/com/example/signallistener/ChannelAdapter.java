@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
+import android.widget.ImageButton;
 import android.widget.Spinner;
 import android.widget.TextView;
 
@@ -59,13 +60,15 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.VH> {
         // Prevent listeners from firing during bind
         h.chkEnabled.setOnCheckedChangeListener(null);
         h.spinnerRoute.setOnItemSelectedListener(null);
+        h.btnDelete.setOnClickListener(null);
 
         h.chkEnabled.setChecked(c.enabled);
 
+        // Use custom layouts with white text (visible on dark background)
         ArrayAdapter<String> a = new ArrayAdapter<>(
                 h.itemView.getContext(),
-                android.R.layout.simple_spinner_item, ROUTES);
-        a.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                R.layout.spinner_item, ROUTES);
+        a.setDropDownViewResource(R.layout.spinner_dropdown_item);
         h.spinnerRoute.setAdapter(a);
 
         int idx = 0;
@@ -86,6 +89,8 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.VH> {
             }
             @Override public void onNothingSelected(AdapterView<?> p) { }
         });
+        h.btnDelete.setOnClickListener(v ->
+                ChannelStore.get(v.getContext()).remove(c.name));
     }
 
     @Override
@@ -95,12 +100,14 @@ public class ChannelAdapter extends RecyclerView.Adapter<ChannelAdapter.VH> {
         CheckBox chkEnabled;
         TextView txtName, txtStats;
         Spinner spinnerRoute;
+        ImageButton btnDelete;
         VH(View v) {
             super(v);
             chkEnabled  = v.findViewById(R.id.chkEnabled);
             txtName     = v.findViewById(R.id.txtName);
             txtStats    = v.findViewById(R.id.txtStats);
             spinnerRoute = v.findViewById(R.id.spinnerRoute);
+            btnDelete   = v.findViewById(R.id.btnDelete);
         }
     }
 }
