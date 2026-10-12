@@ -49,8 +49,7 @@ public class AlertNotifier {
             // Vibration pattern: wait, buzz, pause, buzz
             ch.enableVibration(true);
             ch.setVibrationPattern(new long[]{ 0L, 400L, 200L, 400L, 200L, 400L });
-            ch.setLights(0xFF00FF00, 500, 500);
-
+            
             nm.createNotificationChannel(ch);
         }
         channelCreated = true;
